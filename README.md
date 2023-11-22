@@ -73,3 +73,9 @@ Remove an entire stack configured in `serverless.yml` via CloudFormation.
 // Links to S3 and cloudFront
 https://d1jc76n1kbnk6s.cloudfront.net
 https://d2pfrqsia913sg.cloudfront.net
+
+
+// Links endpoints 
+Gets: 
+ GET - https://j78lofpwl8.execute-api.us-east-1.amazonaws.com/dev/products
+  GET - https://j78lofpwl8.execute-api.us-east-1.amazonaws.com/dev/products/{productId}
