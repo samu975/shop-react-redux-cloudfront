@@ -43,7 +43,7 @@ functions:
     handler: lambdas/getProductsById.handler
     events:
       - http:
-          path: products/{productId}
+          path: product/{productId}
           method: get
           cors: true
 
