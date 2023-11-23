@@ -1,7 +1,7 @@
 const products = require("./mockProducts");
 
 exports.handler = async (event, context, callback) => {
-    const respose = {
+    return {
         statusCode: 200,
         headers: {
             'Access-Control-Allow-Origin': '*',
@@ -9,6 +9,5 @@ exports.handler = async (event, context, callback) => {
         },
         body: JSON.stringify(products),
     };
-    callback(null, respose);
     
 };
