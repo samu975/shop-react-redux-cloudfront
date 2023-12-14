@@ -18,7 +18,7 @@ plugins:
   # Existing plugin (https://www.npmjs.com/package/serverless-single-page-app-plugin) doesn't have invalidate cache feature that often used during CI/CD events.
   # How to build your own plugins: https://www.serverless.com/framework/docs/providers/aws/guide/plugins#service-local-plugin
   - serverless-single-page-app-plugin
-  - serverless-s3-cleaner  	
+  - serverless-s3-cleaner
   - serverless-plugin-common-excludes
   - serverless-plugin-include-dependencies
 
@@ -56,9 +56,52 @@ functions:
           path: products
           method: post
           cors: true
+  catalogBatchProcess:
+    handler: lambdas/catalogBatchProcess.handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - catalogItemsQueue
+              - Arn
+          batchSize: 5
+importFileParser:
+  handler: handler.importFileParser
+  events:
+    - s3:
+        bucket: ${self:custom.s3BucketName}
+        event: s3:ObjectCreated:*
+  environment:
+    SQS_QUEUE_URL:
+      Fn::GetAtt:
+        - catalogItemsQueue
+        - Arn
 
 resources:
   Resources:
+    catalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+        DisplayName: CreateProductTopic
+        TopicName: createProductTopic
+        ReceiveMessageWaitTimeSeconds: 20
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - catalogItemsQueueDLQ
+              - Arn
+          maxReceiveCount: 3
+
+    createProductTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: email
+        TopicArn:
+          Ref: createProductTopic
+        Endpoint: safero99@gmail.com
+
     ## Specifying the S3 Bucket
     WebAppS3Bucket:
       Type: AWS::S3::Bucket
