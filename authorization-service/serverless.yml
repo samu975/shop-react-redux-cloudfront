@@ -1,0 +1,34 @@
+service: authorization-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 's3:PutObject'
+      Resource: 'arn:aws:s3:::epam-aws-task-5/upload/*'
+
+plugins:
+  - serverless-finch
+  - serverless-s3-cleaner
+  - serverless-plugin-common-excludes
+  - serverless-plugin-include-dependencies
+  - serverless-dotenv-plugin
+
+custom:
+  client:
+    bucketName: epam-aws-coruse-task-5
+  s3BucketName: ${self:custom.client.bucketName}
+
+  serverless-s3-cleaner:
+    buckets:
+      - ${self:custom.client.bucketName}
+
+functions:
+  basicAuthorizer:
+    handler: handler.basicAuthorizer
+    environment:
+      YOUR_GITHUB_ACCOUNT_LOGIN: TEST_PASSWORD
